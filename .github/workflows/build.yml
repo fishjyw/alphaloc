@@ -1,0 +1,22 @@
+name: Build AlphaLoc
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Unzip source
+        run: unzip -o *.zip -d src
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install platformio
+      - name: Build firmware
+        working-directory: src
+        run: |
+          pio run -e m5sticks3-fake
+          pio run -e m5sticks3
+      - uses: actions/upload-artifact@v4
+        with:
+          name: firmware
+          path: src/.pio/build/m5sticks3*/*.bin
